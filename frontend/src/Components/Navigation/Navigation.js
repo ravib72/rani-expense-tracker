@@ -2,21 +2,36 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import avatar from '../../img/avatar.png'
 import { signout } from '../../utils/Icons'
+import { signup } from '../../utils/Icons'
+import { signin } from '../../utils/Icons'
 import { menuItems } from '../../utils/menuItems'
+import { useLogout } from '../../hooks/useLogout'
+import { useAuthContext } from '../../hooks/useAuthContext'
+// import { Link } from 'react-router-dom'
+
+const allMenuItems = menuItems.filter(item => item.id >= 1 && item.id <= 4);
+const userItems = menuItems.filter(item => item.id > 4);
 
 function Navigation({active, setActive}) {
-    
+    const { logout } = useLogout()
+    const { user } = useAuthContext()
+    const handleClick = () => {
+        logout()
+    }
     return (
         <NavStyled>
             <div className="user-con">
                 <img src={avatar} alt="" />
-                <div className="text">
-                    <h2>Mike</h2>
-                    <p>Your Money</p>
-                </div>
+                {user && (
+                    <div className="text">
+                        <h2>{user.email}</h2>
+                        <p>Your Money</p>
+                    </div>
+                )}
             </div>
+            {user && (
             <ul className="menu-items">
-                {menuItems.map((item) => {
+                {allMenuItems.map((item) => {
                     return <li
                         key={item.id}
                         onClick={() => setActive(item.id)}
@@ -27,10 +42,28 @@ function Navigation({active, setActive}) {
                     </li>
                 })}
             </ul>
+            )}
+            {!user && (
+            <ul className="menu-items">
+
+                {userItems.map((item) => {
+                    return <li
+                        key={item.id}
+                        onClick={() => setActive(item.id)}
+                        className={active === item.id ? 'active': ''}
+                    >
+                        {item.icon}
+                        <span>{item.title}</span>
+                    </li>
+                })}
+            </ul>
+            )}
             <div className="bottom-nav">
-                <li>
+                {user && (
+                <li onClick={handleClick}>
                     {signout} Sign Out
                 </li>
+                )}
             </div>
         </NavStyled>
     )
@@ -94,6 +127,12 @@ const NavStyled = styled.nav`
         }
     }
 
+    .bottom-nav{
+        li{
+            cursor: pointer;
+            padding-left: 1rem;
+        }
+    }
     .active{
         color: rgba(34, 34, 96, 1) !important;
         i{

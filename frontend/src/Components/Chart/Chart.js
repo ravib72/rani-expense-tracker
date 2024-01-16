@@ -32,6 +32,8 @@ function Chart() {
     const data = {
         labels: incomes.map((inc) =>{
             const {date} = inc
+            console.log(date)
+            console.log(dateFormat(date))
             return dateFormat(date)
         }),
         datasets: [
